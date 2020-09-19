@@ -13,21 +13,15 @@ public class GoogleIME {
         conn.setRequestMethod("GET");
         conn.connect();
         if (conn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-            InputStream is = conn.getInputStream();
             int BUFF_SIZE = 100;
             byte[] buf = new byte[BUFF_SIZE];
-            int offset = 0;
-            while (true) {
-                int len = is.read(buf, offset, BUFF_SIZE - offset);
-                if (len < 0) {
-                    break;
-                }
-                offset += len;
-                if (offset >= BUFF_SIZE) {
-                    break;
-                }
+            InputStream is = conn.getInputStream();
+            StringBuilder sb = new StringBuilder();
+            int len;
+            while ((len = is.read(buf, 0, BUFF_SIZE)) >= 0) {
+                sb.append(new String(buf, 0, len));
             }
-            return new String(buf, 0, Math.min(offset, BUFF_SIZE));
+            return sb.toString();
         } else {
             return "";
         }
