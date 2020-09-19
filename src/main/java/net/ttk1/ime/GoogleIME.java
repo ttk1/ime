@@ -8,9 +8,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * https://www.google.co.jp/ime/cgiapi.html
+ */
 public class GoogleIME {
     private static final Gson gson = new Gson();
 
@@ -22,10 +26,12 @@ public class GoogleIME {
             conn.connect();
             if (conn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                 StringBuilder sb = new StringBuilder();
-                JsonReader jr = new JsonReader(new InputStreamReader(conn.getInputStream()));
+                JsonReader jr = new JsonReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
                 // メモ:
                 // [[phrase1,[candidate1,candidate2,...]],[phrase2,...]]
-                // ↑ みたいな感じで入ってくるので、`List<List<List<String>>>` は本当はよくない
+                // みたいな感じで入ってくるので、`List<List<List<String>>>` は本当はよくない。
+                // ただJavaだと複数の型が含まれるListを宣言できないのでこのような形にしてる。
+                // 良いやり方思いついた方、PR送ってください。
                 List<List<List<String>>> phrases = new ArrayList<>();
                 phrases = gson.fromJson(jr, phrases.getClass());
                 for (List<List<String>> phrase : phrases) {
