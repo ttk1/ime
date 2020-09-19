@@ -23,14 +23,16 @@ public class GoogleIME {
             if (conn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                 StringBuilder sb = new StringBuilder();
                 JsonReader jr = new JsonReader(new InputStreamReader(conn.getInputStream()));
-                // [[word1,[candidate1,candidate2,...]],[word2,...]]
+                // メモ:
+                // [[phrase1,[candidate1,candidate2,...]],[phrase2,...]]
                 // ↑ みたいな感じで入ってくるので、`List<List<List<String>>>` は本当はよくない
-                List<List<List<String>>> words = new ArrayList<>();
-                words = gson.fromJson(jr, words.getClass());
-                for (List<List<String>> word : words) {
-                    List<String> candidates = word.get(1);
+                List<List<List<String>>> phrases = new ArrayList<>();
+                phrases = gson.fromJson(jr, phrases.getClass());
+                for (List<List<String>> phrase : phrases) {
+                    List<String> candidates = phrase.get(1);
                     sb.append(candidates.get(0));
                 }
+                conn.disconnect();
                 return sb.toString();
             }
         } catch (IOException e) {
