@@ -36,6 +36,7 @@ public class GoogleIME {
                 phrases = gson.fromJson(jr, phrases.getClass());
                 for (List<List<String>> phrase : phrases) {
                     List<String> candidates = phrase.get(1);
+                    // 変換候補の先頭のものを使用する
                     sb.append(candidates.get(0));
                 }
                 conn.disconnect();
